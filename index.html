@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcripción Avanzada | Inteligencia Digital</title>
+    <style>
+        :root {
+            --primary: #0A2463;
+            --secondary: #3E92CC;
+            --accent: #D8315B;
+            --light: #FFFAFF;
+            --dark: #1E1B18;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            font-family: 'Montserrat', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light);
+            color: var(--dark);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            flex: 1;
+            max-width: calc(100% - var(--sidebar-width));
+            box-sizing: border-box;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .logo {
+            height: 100px;
+            margin-right: 15px;
+        }
+        
+        .title-container h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .title-container p {
+            color: var(--secondary);
+            margin: 5px 0 0;
+            font-size: 16px;
+        }
+        
+        #editableResult {
+            border: 2px solid var(--secondary);
+            min-height: 300px;
+            margin: 25px 0;
+            padding: 20px;
+            text-align: left;
+            white-space: pre-wrap;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            outline: none;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        #editableResult:focus {
+            border-color: var(--primary);
+        }
+        
+        .interim-text {
+            color: #666;
+            font-style: italic;
+            background-color: #f0f8ff;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #clearBtn {
+            background-color: var(--accent);
+        }
+        
+        #copyBtn {
+            background-color: var(--secondary);
+        }
+        
+        #editBtn {
+            background-color: #4CAF50;
+        }
+        
+        #downloadBtn {
+            background-color: #9C27B0;
+        }
+        
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: rgba(62, 146, 204, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 15px;
+        }
+        
+        .commands-info h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 18px;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .commands-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .command-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .command-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .command-voice {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .command-symbol {
+            font-weight: bold;
+            font-size: 18px;
+            margin-left: 5px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: var(--primary);
+            font-size: 14px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+                padding: 15px;
+            }
+            
+            .main-content {
+                margin-left: 220px;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                padding: 15px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+                max-width: 100%;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .logo-container {
+                margin-right: 0;
+                margin-bottom: 15px;
+                justify-content: center;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="commands-info">
+            <h3><i class="fas fa-microphone-alt"></i> Comandos de Voz</h3>
+            <div class="commands-list">
+                <div class="command-item">
+                    <span class="command-voice">"punto"</span>
+                    <span class="command-symbol">→ .</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"coma"</span>
+                    <span class="command-symbol">→ ,</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"dos puntos"</span>
+                    <span class="command-symbol">→ :</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"punto y coma"</span>
+                    <span class="command-symbol">→ ;</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"signo de exclamación"</span>
+                    <span class="command-symbol">→ !</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"signo de interrogación"</span>
+                    <span class="command-symbol">→ ?</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"nuevo párrafo"</span>
+                    <span class="command-symbol">→ ↵↵</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"abrir paréntesis"</span>
+                    <span class="command-symbol">→ (</span>
+                </div>
+                <div class="command-item">
+                    <span class="command-voice">"cerrar paréntesis"</span>
+                    <span class="command-symbol">→ )</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://inteligenciadigital.net/assets/images/id-logo-small-solo-93x94.png" alt="Logo Inteligencia Digital" class="logo">
+            </div>
+            <div class="title-container">
+                <h1>Transcripción Avanzada</h1>
+                <p>Dicta, edita y exporta tu texto con comandos de voz</p>
+            </div>
+        </div>
+        
+        <div class="button-container">
+            <button id="startBtn"><i class="fas fa-microphone"></i> Iniciar</button>
+            <button id="stopBtn" disabled><i class="fas fa-stop"></i> Detener</button>
+            <button id="copyBtn"><i class="far fa-copy"></i> Copiar</button>
+            <button id="downloadBtn"><i class="fas fa-download"></i> Descargar</button>
+            <button id="clearBtn"><i class="fas fa-trash-alt"></i> Borrar</button>
+            <button id="editBtn"><i class="fas fa-edit"></i> Editar</button>
+        </div>
+        
+        <div class="status" id="status">
+            <i class="fas fa-info-circle"></i> Presiona "Iniciar" para comenzar a dictar. Usa comandos como "punto" o "coma" para puntuación automática.
+        </div>
+        
+        <div id="editableResult" contenteditable="false" placeholder="El texto transcrito aparecerá aquí..."></div>
+        
+        <div class="footer">
+            <p>© 2023 Inteligencia Digital | Todos los derechos reservados</p>
+        </div>
+    </div>
+    
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const editBtn = document.getElementById('editBtn');
+        const editableResult = document.getElementById('editableResult');
+        const status = document.getElementById('status');
+        
+        let recognition;
+        let finalTranscript = '';
+        let interimTranscript = '';
+        let isEditing = false;
+        
+        // Mapeo de comandos de voz a signos de puntuación
+        const voiceCommands = {
+            'punto': '.',
+            'coma': ',',
+            'dos puntos': ':',
+            'punto y coma': ';',
+            'signo de exclamación': '!',
+            'signo de interrogación': '?',
+            'nuevo párrafo': '\n\n',
+            'abrir paréntesis': ' (',
+            'cerrar paréntesis': ') '
+        };
+        
+        // Verificar compatibilidad del navegador
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+        } else if ('SpeechRecognition' in window) {
+            recognition = new SpeechRecognition();
+        } else {
+            status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.`;
+            startBtn.disabled = true;
+        }
+        
+        if (recognition) {
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'es-ES';
+            
+            recognition.onstart = function() {
+                if (isEditing) {
+                    toggleEditMode();
+                }
+                status.innerHTML = `<i class="fas fa-microphone-alt"></i> <strong>Escuchando...</strong> Habla ahora. Usa comandos como "punto" o "coma". Presiona "Detener" cuando termines.`;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            };
+            
+            recognition.onerror = function(event) {
+                status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ${event.error}. Intenta nuevamente.`;
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            };
+            
+            recognition.onend = function() {
+                if (finalTranscript || interimTranscript) {
+                    status.innerHTML = `<i class="fas fa-pause"></i> Transcripción pausada. Presiona "Iniciar" para continuar.`;
+                } else {
+                    status.innerHTML = `<i class="fas fa-microphone-slash"></i> Presiona "Iniciar" para comenzar a dictar.`;
+                }
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                
+                // Convertir provisional a definitivo al detener
+                if (interimTranscript) {
+                    finalTranscript += processCommands(interimTranscript);
+                    interimTranscript = '';
+                    updateResult();
+                }
+            };
+            
+            recognition.onresult = function(event) {
+                interimTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += processCommands(transcript);
+                    } else {
+                        interimTranscript += transcript;
+                    }
+                }
+                
+                updateResult();
+            };
+        }
+        
+        // Procesar comandos de voz y reemplazarlos por signos
+        function processCommands(text) {
+            let processedText = text;
+            
+            // Reemplazar comandos completos primero (como "punto y coma")
+            processedText = processedText.replace(/punto y coma/gi, ';');
+            processedText = processedText.replace(/dos puntos/gi, ':');
+            processedText = processedText.replace(/signo de exclamación/gi, '!');
+            processedText = processedText.replace(/signo de interrogación/gi, '?');
+            processedText = processedText.replace(/nuevo párrafo/gi, '\n\n');
+            processedText = processedText.replace(/abrir paréntesis/gi, ' (');
+            processedText = processedText.replace(/cerrar paréntesis/gi, ') ');
+            
+            // Reemplazar comandos simples
+            processedText = processedText.replace(/punto/gi, '.');
+            processedText = processedText.replace(/coma/gi, ',');
+            
+            // Asegurar espacios después de ciertos signos
+            processedText = processedText.replace(/([.,:;!?])([a-zA-ZáéíóúÁÉÍÓÚ])/g, '$1 $2');
+            
+            return processedText;
+        }
+        
+        function updateResult() {
+            if (!isEditing) {
+                let htmlContent = finalTranscript;
+                if (interimTranscript) {
+                    htmlContent += `<span class="interim-text">${processCommands(interimTranscript)}</span>`;
+                }
+                editableResult.innerHTML = htmlContent || '<span style="color:#999">El texto transcrito aparecerá aquí...</span>';
+                autoScroll();
+            }
+        }
+        
+        function autoScroll() {
+            editableResult.scrollTop = editableResult.scrollHeight;
+        }
+        
+        function toggleEditMode() {
+            isEditing = !isEditing;
+            
+            if (isEditing) {
+                // Entrar en modo edición
+                editableResult.contentEditable = true;
+                editableResult.focus();
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+                editBtn.style.backgroundColor = "#FF9800";
+                status.innerHTML = '<i class="fas fa-edit"></i> <strong>Modo edición:</strong> Edita el texto y presiona "Guardar" cuando termines.';
+                
+                // Detener reconocimiento si está activo
+                if (!stopBtn.disabled) {
+                    recognition.stop();
+                }
+                
+                // Mostrar todo el texto como editable
+                editableResult.textContent = finalTranscript + interimTranscript;
+            } else {
+                // Salir del modo edición
+                editableResult.contentEditable = false;
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> Editar';
+                editBtn.style.backgroundColor = "#4CAF50";
+                status.innerHTML = '<i class="fas fa-check"></i> Edición guardada. Presiona "Iniciar" para continuar dictando.';
+                
+                // Actualizar el texto transcrito con las ediciones
+                finalTranscript = editableResult.textContent;
+                interimTranscript = '';
+                
+                // Volver a mostrar con formato
+                updateResult();
+            }
+        }
+        
+        function downloadText() {
+            const textToDownload = editableResult.textContent;
+            if (!textToDownload.trim()) {
+                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> No hay texto para descargar.';
+                return;
+            }
+            
+            const blob = new Blob([textToDownload], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `transcripcion-${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Archivo descargado correctamente.';
+            setTimeout(() => {
+                if (!stopBtn.disabled) {
+                    status.innerHTML = '<i class="fas fa-microphone-alt"></i> <strong>Escuchando...</strong> Habla ahora. Usa comandos como "punto" o "coma".';
+                } else if (finalTranscript || interimTranscript) {
+                    status.innerHTML = '<i class="fas fa-pause"></i> Transcripción pausada. Presiona "Iniciar" para continuar.';
+                } else {
+                    status.innerHTML = '<i class="fas fa-microphone-slash"></i> Presiona "Iniciar" para comenzar a dictar.';
+                }
+            }, 3000);
+        }
+        
+        startBtn.addEventListener('click', () => {
+            if (isEditing) {
+                toggleEditMode();
+            }
+            recognition.start();
+        });
+        
+        stopBtn.addEventListener('click', () => {
+            recognition.stop();
+        });
+        
+        copyBtn.addEventListener('click', () => {
+            const textToCopy = editableResult.textContent;
+            if (!textToCopy.trim()) {
+                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> No hay texto para copiar.';
+                return;
+            }
+            
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    const originalHTML = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                    status.innerHTML = '<i class="fas fa-check-circle"></i> Texto copiado al portapapeles.';
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalHTML;
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Error al copiar: ', err);
+                    status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> No se pudo copiar el texto. Intenta nuevamente.';
+                });
+        });
+        
+        downloadBtn.addEventListener('click', downloadText);
+        
+        clearBtn.addEventListener('click', () => {
+            finalTranscript = '';
+            interimTranscript = '';
+            editableResult.textContent = '';
+            status.innerHTML = '<i class="fas fa-trash-alt"></i> Texto borrado. Presiona "Iniciar" para comenzar.';
+            
+            // Resetear botones
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            
+            // Salir del modo edición si está activo
+            if (isEditing) {
+                toggleEditMode();
+            }
+        });
+        
+        editBtn.addEventListener('click', toggleEditMode);
+    </script>
+</body>
+</html>
