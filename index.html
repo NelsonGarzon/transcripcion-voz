@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transcripción Avanzada | Inteligencia Digital</title>
+    <title>Transcripción de Voz | Inteligencia Digital</title>
+    <meta name="theme-color" content="#0A2463">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #0A2463;
@@ -11,334 +16,482 @@
             --accent: #D8315B;
             --light: #FFFAFF;
             --dark: #1E1B18;
-            --sidebar-width: 250px;
+            --sidebar-width: 280px;
+            --mobile-breakpoint: 768px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
             font-family: 'Montserrat', 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: var(--light);
             color: var(--dark);
-            display: flex;
+            line-height: 1.6;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--primary);
-            color: white;
-            padding: 20px;
-            box-sizing: border-box;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 30px;
-            flex: 1;
-            max-width: calc(100% - var(--sidebar-width));
-            box-sizing: border-box;
-        }
-        
+        /* Header Styles */
         .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            justify-content: space-between;
         }
         
         .logo-container {
             display: flex;
             align-items: center;
-            margin-right: 20px;
+            gap: 1rem;
         }
         
         .logo {
-            height: 100px;
-            margin-right: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            padding: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         
         .title-container h1 {
-            color: var(--primary);
+            font-size: 1.4rem;
             margin: 0;
-            font-size: 28px;
+            font-weight: 600;
         }
         
         .title-container p {
-            color: var(--secondary);
-            margin: 5px 0 0;
-            font-size: 16px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
         }
         
-        #editableResult {
-            border: 2px solid var(--secondary);
-            min-height: 300px;
-            margin: 25px 0;
-            padding: 20px;
-            text-align: left;
-            white-space: pre-wrap;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            outline: none;
-            line-height: 1.6;
-            font-size: 16px;
-        }
-        
-        #editableResult:focus {
-            border-color: var(--primary);
-        }
-        
-        .interim-text {
-            color: #666;
-            font-style: italic;
-            background-color: #f0f8ff;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-        
-        .button-container {
+        /* Main Layout */
+        .main-container {
             display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 25px;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
         
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            min-width: 180px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        button:disabled {
-            background-color: #cccccc;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        #clearBtn {
-            background-color: var(--accent);
-        }
-        
-        #copyBtn {
-            background-color: var(--secondary);
-        }
-        
-        #editBtn {
-            background-color: #4CAF50;
-        }
-        
-        #downloadBtn {
-            background-color: #9C27B0;
-        }
-        
-        .status {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: rgba(62, 146, 204, 0.1);
-            color: var(--primary);
-            font-weight: 500;
-            font-size: 15px;
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            height: calc(100vh - 80px);
+            position: sticky;
+            top: 80px;
         }
         
         .commands-info h3 {
-            color: white;
-            margin-top: 0;
-            font-size: 18px;
-            border-bottom: 2px solid var(--secondary);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .commands-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 0.8rem;
         }
         
         .command-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 6px;
-            transition: all 0.2s;
+            background: var(--light);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            transition: transform 0.2s ease;
         }
         
         .command-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
         }
         
         .command-voice {
             font-weight: 600;
-            color: var(--secondary);
+            color: var(--primary);
+            font-size: 0.9rem;
         }
         
         .command-symbol {
             font-weight: bold;
-            font-size: 18px;
-            margin-left: 5px;
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
         }
         
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Button Container */
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            min-height: 50px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+        
+        #startBtn { background: var(--primary); }
+        #stopBtn { background: #2c5530; }
+        #copyBtn { background: var(--secondary); }
+        #downloadBtn { background: #9C27B0; }
+        #clearBtn { background: var(--accent); }
+        #editBtn { background: #4CAF50; }
+        
+        /* Status and Text Area */
+        .status {
+            background: rgba(62, 146, 204, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--secondary);
+            font-size: 0.9rem;
+        }
+        
+        #editableResult {
+            width: 100%;
+            min-height: 300px;
+            padding: 1.5rem;
+            border: 2px solid var(--secondary);
+            border-radius: 15px;
+            background: white;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: border-color 0.3s ease;
+        }
+        
+        #editableResult:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 4px 20px rgba(10, 36, 99, 0.2);
+        }
+        
+        .interim-text {
+            color: #666;
+            font-style: italic;
+            background: linear-gradient(transparent 50%, rgba(62, 146, 204, 0.1) 50%);
+            padding: 0 2px;
+            border-radius: 3px;
+        }
+        
+        /* Footer */
         .footer {
-            margin-top: 40px;
+            background: var(--primary);
+            color: white;
             text-align: center;
-            color: var(--primary);
-            font-size: 14px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+            padding: 1.5rem;
+            margin-top: auto;
         }
         
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        /* Responsive Design */
         @media (max-width: 1024px) {
             .sidebar {
-                width: 220px;
-                padding: 15px;
+                width: 250px;
+                padding: 1rem;
             }
             
-            .main-content {
-                margin-left: 220px;
-                padding: 20px;
+            .button-container {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
         
         @media (max-width: 768px) {
-            body {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: absolute;
+                left: 1rem;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            
+            .main-container {
                 flex-direction: column;
             }
             
             .sidebar {
-                position: static;
-                width: 100%;
-                height: auto;
-                padding: 15px;
+                position: fixed;
+                left: -100%;
+                top: 80px;
+                height: calc(100vh - 80px);
+                width: 80%;
+                max-width: 300px;
+                z-index: 1000;
+                transition: left 0.3s ease;
             }
             
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-                max-width: 100%;
+            .sidebar.active {
+                left: 0;
             }
             
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .logo-container {
-                margin-right: 0;
-                margin-bottom: 15px;
-                justify-content: center;
+            .mobile-overlay.active {
+                display: block;
             }
             
             .button-container {
-                flex-direction: column;
-                align-items: center;
+                grid-template-columns: 1fr;
+                gap: 0.8rem;
             }
             
             button {
-                width: 100%;
+                min-height: 60px;
+                font-size: 1rem;
+            }
+            
+            #editableResult {
+                min-height: 250px;
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .title-container h1 {
+                font-size: 1.2rem;
+            }
+            
+            .title-container p {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.8rem;
+            }
+            
+            .logo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .status {
+                font-size: 0.8rem;
+            }
+            
+            .footer {
+                padding: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Animation for recording state */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .recording {
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.5);
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) {
+            button:hover {
+                transform: none;
+            }
+            
+            .command-item:hover {
+                transform: none;
+            }
+        }
+        
+        /* iOS specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            .main-content {
+                padding-bottom: 2rem;
+            }
+            
+            #editableResult {
+                -webkit-overflow-scrolling: touch;
             }
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <div class="sidebar">
-        <div class="commands-info">
-            <h3><i class="fas fa-microphone-alt"></i> Comandos de Voz</h3>
-            <div class="commands-list">
-                <div class="command-item">
-                    <span class="command-voice">"punto"</span>
-                    <span class="command-symbol">→ .</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"coma"</span>
-                    <span class="command-symbol">→ ,</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"dos puntos"</span>
-                    <span class="command-symbol">→ :</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"punto y coma"</span>
-                    <span class="command-symbol">→ ;</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"signo de exclamación"</span>
-                    <span class="command-symbol">→ !</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"signo de interrogación"</span>
-                    <span class="command-symbol">→ ?</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"nuevo párrafo"</span>
-                    <span class="command-symbol">→ ↵↵</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"abrir paréntesis"</span>
-                    <span class="command-symbol">→ (</span>
-                </div>
-                <div class="command-item">
-                    <span class="command-voice">"cerrar paréntesis"</span>
-                    <span class="command-symbol">→ )</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="main-content">
-        <div class="header">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="logo-container">
-                <img src="https://inteligenciadigital.net/assets/images/id-logo-small-solo-93x94.png" alt="Logo Inteligencia Digital" class="logo">
+                <img src="https://www.inteligenciadigital.net/wp-content/uploads/2023/05/cropped-favicon-1-32x32.png" 
+                     alt="Logo Inteligencia Digital" class="logo">
+                <div class="title-container">
+                    <h1>Transcripción de Voz</h1>
+                    <p>Convierte tu voz en texto inteligentemente</p>
+                </div>
             </div>
-            <div class="title-container">
-                <h1>Transcripción Avanzada</h1>
-                <p>Dicta, edita y exporta tu texto con comandos de voz</p>
+        </div>
+    </header>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="commands-info">
+                <h3><i class="fas fa-voice"></i> Comandos de Voz</h3>
+                <div class="commands-list">
+                    <div class="command-item">
+                        <div class="command-voice">"punto"</div>
+                        <div class="command-symbol">→ .</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"coma"</div>
+                        <div class="command-symbol">→ ,</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"dos puntos"</div>
+                        <div class="command-symbol">→ :</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"punto y coma"</div>
+                        <div class="command-symbol">→ ;</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"signo de exclamación"</div>
+                        <div class="command-symbol">→ !</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"signo de interrogación"</div>
+                        <div class="command-symbol">→ ?</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"nuevo párrafo"</div>
+                        <div class="command-symbol">→ ↵↵</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"abrir paréntesis"</div>
+                        <div class="command-symbol">→ (</div>
+                    </div>
+                    <div class="command-item">
+                        <div class="command-voice">"cerrar paréntesis"</div>
+                        <div class="command-symbol">→ )</div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <div class="button-container">
-            <button id="startBtn"><i class="fas fa-microphone"></i> Iniciar</button>
-            <button id="stopBtn" disabled><i class="fas fa-stop"></i> Detener</button>
-            <button id="copyBtn"><i class="far fa-copy"></i> Copiar</button>
-            <button id="downloadBtn"><i class="fas fa-download"></i> Descargar</button>
-            <button id="clearBtn"><i class="fas fa-trash-alt"></i> Borrar</button>
-            <button id="editBtn"><i class="fas fa-edit"></i> Editar</button>
-        </div>
-        
-        <div class="status" id="status">
-            <i class="fas fa-info-circle"></i> Presiona "Iniciar" para comenzar a dictar. Usa comandos como "punto" o "coma" para puntuación automática.
-        </div>
-        
-        <div id="editableResult" contenteditable="false" placeholder="El texto transcrito aparecerá aquí..."></div>
-        
-        <div class="footer">
-            <p>© 2023 Inteligencia Digital | Todos los derechos reservados</p>
-        </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="button-container">
+                <button id="startBtn"><i class="fas fa-microphone"></i> Iniciar</button>
+                <button id="stopBtn" disabled><i class="fas fa-stop"></i> Detener</button>
+                <button id="copyBtn"><i class="far fa-copy"></i> Copiar</button>
+                <button id="downloadBtn"><i class="fas fa-download"></i> Descargar</button>
+                <button id="clearBtn"><i class="fas fa-trash-alt"></i> Borrar</button>
+                <button id="editBtn"><i class="fas fa-edit"></i> Editar</button>
+            </div>
+
+            <div class="status" id="status">
+                <i class="fas fa-info-circle"></i> Presiona "Iniciar" para comenzar a dictar. Usa comandos de voz para puntuación automática.
+            </div>
+
+            <textarea id="editableResult" placeholder="El texto transcrito aparecerá aquí..."></textarea>
+        </main>
     </div>
-    
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2023 Inteligencia Digital | Todos los derechos reservados</p>
+    </footer>
+
     <script>
+        // Elementos DOM
         const startBtn = document.getElementById('startBtn');
         const stopBtn = document.getElementById('stopBtn');
         const copyBtn = document.getElementById('copyBtn');
@@ -347,75 +500,72 @@
         const editBtn = document.getElementById('editBtn');
         const editableResult = document.getElementById('editableResult');
         const status = document.getElementById('status');
-        
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const sidebar = document.getElementById('sidebar');
+
+        // Variables de estado
         let recognition;
         let finalTranscript = '';
         let interimTranscript = '';
         let isEditing = false;
-        
-        // Mapeo de comandos de voz a signos de puntuación
+
+        // Mapeo de comandos de voz
         const voiceCommands = {
-            'punto': '.',
-            'coma': ',',
-            'dos puntos': ':',
-            'punto y coma': ';',
-            'signo de exclamación': '!',
-            'signo de interrogación': '?',
-            'nuevo párrafo': '\n\n',
-            'abrir paréntesis': ' (',
-            'cerrar paréntesis': ') '
+            'punto': '.', 'coma': ',', 'dos puntos': ':', 'punto y coma': ';',
+            'signo de exclamación': '!', 'signo de interrogación': '?',
+            'nuevo párrafo': '\n\n', 'abrir paréntesis': ' (', 'cerrar paréntesis': ') '
         };
-        
-        // Verificar compatibilidad del navegador
-        if ('webkitSpeechRecognition' in window) {
-            recognition = new webkitSpeechRecognition();
-        } else if ('SpeechRecognition' in window) {
-            recognition = new SpeechRecognition();
-        } else {
-            status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.`;
-            startBtn.disabled = true;
-        }
-        
-        if (recognition) {
+
+        // Inicializar reconocimiento de voz
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+            } else if ('SpeechRecognition' in window) {
+                recognition = new SpeechRecognition();
+            } else {
+                showError("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
+                startBtn.disabled = true;
+                return;
+            }
+
             recognition.continuous = true;
             recognition.interimResults = true;
             recognition.lang = 'es-ES';
-            
-            recognition.onstart = function() {
-                if (isEditing) {
-                    toggleEditMode();
-                }
-                status.innerHTML = `<i class="fas fa-microphone-alt"></i> <strong>Escuchando...</strong> Habla ahora. Usa comandos como "punto" o "coma". Presiona "Detener" cuando termines.`;
+
+            recognition.onstart = () => {
+                startBtn.classList.add('recording');
+                updateStatus("Escuchando... Habla ahora. Usa comandos como 'punto' o 'coma'.", 'success');
                 startBtn.disabled = true;
                 stopBtn.disabled = false;
             };
-            
-            recognition.onerror = function(event) {
-                status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> ${event.error}. Intenta nuevamente.`;
+
+            recognition.onerror = (event) => {
+                startBtn.classList.remove('recording');
+                showError(`Error: ${event.error}. Intenta nuevamente.`);
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
             };
-            
-            recognition.onend = function() {
+
+            recognition.onend = () => {
+                startBtn.classList.remove('recording');
                 if (finalTranscript || interimTranscript) {
-                    status.innerHTML = `<i class="fas fa-pause"></i> Transcripción pausada. Presiona "Iniciar" para continuar.`;
+                    updateStatus("Transcripción pausada. Presiona 'Iniciar' para continuar.", 'info');
                 } else {
-                    status.innerHTML = `<i class="fas fa-microphone-slash"></i> Presiona "Iniciar" para comenzar a dictar.`;
+                    updateStatus("Presiona 'Iniciar' para comenzar a dictar.", 'info');
                 }
                 startBtn.disabled = false;
                 stopBtn.disabled = true;
-                
-                // Convertir provisional a definitivo al detener
+
                 if (interimTranscript) {
                     finalTranscript += processCommands(interimTranscript);
                     interimTranscript = '';
                     updateResult();
                 }
             };
-            
-            recognition.onresult = function(event) {
+
+            recognition.onresult = (event) => {
                 interimTranscript = '';
-                
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
@@ -424,91 +574,64 @@
                         interimTranscript += transcript;
                     }
                 }
-                
                 updateResult();
             };
         }
-        
-        // Procesar comandos de voz y reemplazarlos por signos
+
+        // Procesar comandos de voz
         function processCommands(text) {
             let processedText = text;
-            
-            // Reemplazar comandos completos primero (como "punto y coma")
-            processedText = processedText.replace(/punto y coma/gi, ';');
-            processedText = processedText.replace(/dos puntos/gi, ':');
-            processedText = processedText.replace(/signo de exclamación/gi, '!');
-            processedText = processedText.replace(/signo de interrogación/gi, '?');
-            processedText = processedText.replace(/nuevo párrafo/gi, '\n\n');
-            processedText = processedText.replace(/abrir paréntesis/gi, ' (');
-            processedText = processedText.replace(/cerrar paréntesis/gi, ') ');
-            
-            // Reemplazar comandos simples
-            processedText = processedText.replace(/punto/gi, '.');
-            processedText = processedText.replace(/coma/gi, ',');
-            
-            // Asegurar espacios después de ciertos signos
-            processedText = processedText.replace(/([.,:;!?])([a-zA-ZáéíóúÁÉÍÓÚ])/g, '$1 $2');
-            
-            return processedText;
+            Object.entries(voiceCommands).forEach(([command, symbol]) => {
+                processedText = processedText.replace(new RegExp(command, 'gi'), symbol);
+            });
+            return processedText.replace(/([.,:;!?])([a-zA-ZáéíóúÁÉÍÓÚ])/g, '$1 $2');
         }
-        
+
+        // Actualizar resultado
         function updateResult() {
             if (!isEditing) {
-                let htmlContent = finalTranscript;
+                let displayText = finalTranscript;
                 if (interimTranscript) {
-                    htmlContent += `<span class="interim-text">${processCommands(interimTranscript)}</span>`;
+                    displayText += interimTranscript;
                 }
-                editableResult.innerHTML = htmlContent || '<span style="color:#999">El texto transcrito aparecerá aquí...</span>';
+                editableResult.value = displayText;
                 autoScroll();
             }
         }
-        
+
+        // Auto-scroll
         function autoScroll() {
             editableResult.scrollTop = editableResult.scrollHeight;
         }
-        
+
+        // Toggle modo edición
         function toggleEditMode() {
             isEditing = !isEditing;
+            editableResult.readOnly = !isEditing;
             
             if (isEditing) {
-                // Entrar en modo edición
-                editableResult.contentEditable = true;
-                editableResult.focus();
                 editBtn.innerHTML = '<i class="fas fa-save"></i> Guardar';
-                editBtn.style.backgroundColor = "#FF9800";
-                status.innerHTML = '<i class="fas fa-edit"></i> <strong>Modo edición:</strong> Edita el texto y presiona "Guardar" cuando termines.';
-                
-                // Detener reconocimiento si está activo
-                if (!stopBtn.disabled) {
-                    recognition.stop();
-                }
-                
-                // Mostrar todo el texto como editable
-                editableResult.textContent = finalTranscript + interimTranscript;
+                editBtn.style.background = "#FF9800";
+                updateStatus("Modo edición activo. Edita el texto y presiona 'Guardar'.", 'warning');
+                if (!stopBtn.disabled) recognition.stop();
             } else {
-                // Salir del modo edición
-                editableResult.contentEditable = false;
                 editBtn.innerHTML = '<i class="fas fa-edit"></i> Editar';
-                editBtn.style.backgroundColor = "#4CAF50";
-                status.innerHTML = '<i class="fas fa-check"></i> Edición guardada. Presiona "Iniciar" para continuar dictando.';
-                
-                // Actualizar el texto transcrito con las ediciones
-                finalTranscript = editableResult.textContent;
+                editBtn.style.background = "#4CAF50";
+                updateStatus("Edición guardada. Presiona 'Iniciar' para continuar.", 'success');
+                finalTranscript = editableResult.value;
                 interimTranscript = '';
-                
-                // Volver a mostrar con formato
-                updateResult();
             }
         }
-        
+
+        // Descargar texto
         function downloadText() {
-            const textToDownload = editableResult.textContent;
-            if (!textToDownload.trim()) {
-                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> No hay texto para descargar.';
+            const text = editableResult.value;
+            if (!text.trim()) {
+                showError("No hay texto para descargar.");
                 return;
             }
-            
-            const blob = new Blob([textToDownload], { type: 'text/plain' });
+
+            const blob = new Blob([text], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -518,70 +641,88 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            status.innerHTML = '<i class="fas fa-check-circle"></i> Archivo descargado correctamente.';
-            setTimeout(() => {
-                if (!stopBtn.disabled) {
-                    status.innerHTML = '<i class="fas fa-microphone-alt"></i> <strong>Escuchando...</strong> Habla ahora. Usa comandos como "punto" o "coma".';
-                } else if (finalTranscript || interimTranscript) {
-                    status.innerHTML = '<i class="fas fa-pause"></i> Transcripción pausada. Presiona "Iniciar" para continuar.';
-                } else {
-                    status.innerHTML = '<i class="fas fa-microphone-slash"></i> Presiona "Iniciar" para comenzar a dictar.';
-                }
-            }, 3000);
+            updateStatus("Archivo descargado correctamente.", 'success');
         }
-        
+
+        // Funciones de utilidad
+        function updateStatus(message, type = 'info') {
+            const icons = {
+                info: 'fa-info-circle',
+                success: 'fa-check-circle',
+                warning: 'fa-exclamation-triangle',
+                error: 'fa-exclamation-circle'
+            };
+            status.innerHTML = `<i class="fas ${icons[type]}"></i> ${message}`;
+            status.style.borderLeftColor = {
+                info: '#3E92CC',
+                success: '#4CAF50',
+                warning: '#FF9800',
+                error: '#D8315B'
+            }[type];
+        }
+
+        function showError(message) {
+            updateStatus(message, 'error');
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('active');
+            mobileOverlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        }
+
+        // Event Listeners
         startBtn.addEventListener('click', () => {
-            if (isEditing) {
-                toggleEditMode();
-            }
+            if (isEditing) toggleEditMode();
             recognition.start();
         });
-        
-        stopBtn.addEventListener('click', () => {
-            recognition.stop();
-        });
-        
+
+        stopBtn.addEventListener('click', () => recognition.stop());
         copyBtn.addEventListener('click', () => {
-            const textToCopy = editableResult.textContent;
-            if (!textToCopy.trim()) {
-                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> No hay texto para copiar.';
+            const text = editableResult.value;
+            if (!text.trim()) {
+                showError("No hay texto para copiar.");
                 return;
             }
-            
-            navigator.clipboard.writeText(textToCopy)
-                .then(() => {
-                    const originalHTML = copyBtn.innerHTML;
-                    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
-                    status.innerHTML = '<i class="fas fa-check-circle"></i> Texto copiado al portapapeles.';
-                    setTimeout(() => {
-                        copyBtn.innerHTML = originalHTML;
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error('Error al copiar: ', err);
-                    status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <strong>Error:</strong> No se pudo copiar el texto. Intenta nuevamente.';
-                });
+            navigator.clipboard.writeText(text).then(() => {
+                updateStatus("Texto copiado al portapapeles.", 'success');
+            }).catch(() => {
+                showError("Error al copiar el texto.");
+            });
         });
-        
+
         downloadBtn.addEventListener('click', downloadText);
-        
         clearBtn.addEventListener('click', () => {
             finalTranscript = '';
             interimTranscript = '';
-            editableResult.textContent = '';
-            status.innerHTML = '<i class="fas fa-trash-alt"></i> Texto borrado. Presiona "Iniciar" para comenzar.';
-            
-            // Resetear botones
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            
-            // Salir del modo edición si está activo
-            if (isEditing) {
-                toggleEditMode();
-            }
+            editableResult.value = '';
+            updateStatus("Texto borrado. Presiona 'Iniciar' para comenzar.", 'info');
+            if (isEditing) toggleEditMode();
         });
-        
+
         editBtn.addEventListener('click', toggleEditMode);
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileOverlay.addEventListener('click', toggleMobileMenu);
+
+        // Inicializar la aplicación
+        initSpeechRecognition();
+
+        // Prevenir zoom en iOS al hacer doble tap en botones
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
     </script>
 </body>
 </html>
